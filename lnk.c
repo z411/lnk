@@ -7,7 +7,6 @@
  */
 
 #include <stdio.h>
-#include <wchar.h>
 
 void
 usage()
@@ -42,7 +41,6 @@ main(int argc, char *argv[])
   long location_offset;
   int location_size;
   char path[256];
-  wchar_t wpath[256];
   
   FILE *ptr_file;
   
@@ -85,6 +83,8 @@ main(int argc, char *argv[])
     fread(&num, 4, 1, ptr_file);
     fseek(ptr_file, location_offset+num, SEEK_SET); // Read
     read_null_string(path, ptr_file, 256);
+    
+    // Print path
     fprintf(stdout, "%s\n", path);
     
     // Seek into data strings
