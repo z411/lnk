@@ -39,7 +39,6 @@ main(int argc, char *argv[])
   
   int data_flags;
   long location_offset;
-  int location_size;
   char path[256];
   
   FILE *ptr_file;
@@ -50,8 +49,8 @@ main(int argc, char *argv[])
     return 1;
   }
   
-  // LNK header
-  fread(&num, 4, 1, ptr_file); // Header size
+  // Read header size
+  fread(&num, 4, 1, ptr_file);
   
   // The header size is always 76.
   if(num != 76) {
@@ -60,12 +59,12 @@ main(int argc, char *argv[])
     return 1;
   }
   
-  // Data flags
+  // Read data flags (offset 20)
   fseek(ptr_file, 20, SEEK_SET);
   fread(&data_flags, 4, 1, ptr_file);
   
   // Skip the header
-  fseek(ptr_file, num, SEEK_SET);
+  fseek(ptr_file, 76, SEEK_SET);
   
   // Skip the Link target identifier
   fread(&num, 2, 1, ptr_file);
@@ -74,21 +73,16 @@ main(int argc, char *argv[])
   // Location information
   if(data_flags & 0x2) { // HasLinkInfo
     location_offset = ftell(ptr_file);
-    fread(&location_size, 4, 1, ptr_file); // Location info size
-    fseek(ptr_file, location_offset+4, SEEK_SET); // Location info header size
-    fread(&num, 4, 1, ptr_file);
     
-    // LOCAL PATH (offset 16)
-    fseek(ptr_file, location_offset+16, SEEK_SET); // Get string offset
+    // Get the offset of the local path (offset 16)
+    fseek(ptr_file, location_offset+16, SEEK_SET);
     fread(&num, 4, 1, ptr_file);
-    fseek(ptr_file, location_offset+num, SEEK_SET); // Read
+    // Seek to it and read it
+    fseek(ptr_file, location_offset+num, SEEK_SET);
     read_null_string(path, ptr_file, 256);
     
     // Print path
     fprintf(stdout, "%s\n", path);
-    
-    // Seek into data strings
-    //fseek(ptr_file, location_offset+location_size, SEEK_SET);
   }
   else
     fprintf(stderr, "The LNK file doesn't have any location information.\n");
