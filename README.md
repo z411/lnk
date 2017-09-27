@@ -1,5 +1,5 @@
 # lnk
-Simple program to retrieve the location a LNK points to.
+Simple program to retrieve the location a LNK (Windows Shortcut File) points to.
 Useful for re-creating shortcuts in non-Windows operating systems.
 
 Note that the path is returned as an ANSI string as-is; it is
