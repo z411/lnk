@@ -7,6 +7,9 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
+const unsigned char magic[8] = {0x4c, 0, 0, 0, 1, 0x14, 2, 0};
 
 void
 usage()
@@ -39,6 +42,8 @@ main(int argc, char *argv[])
   
   int data_flags;
   long location_offset;
+
+  char id[8];
   char path[256];
   
   FILE *ptr_file;
@@ -49,11 +54,11 @@ main(int argc, char *argv[])
     return 1;
   }
   
-  // Read header size
-  fread(&num, 4, 1, ptr_file);
+  // Check magic number
+  fread(id, 1, 8, ptr_file);
   
   // The header size is always 76.
-  if(num != 76) {
+  if(memcmp(id, magic, sizeof(magic)) != 0) {
     fprintf(stderr, "Not an LNK file.\n");
     fclose(ptr_file);
     return 1;
@@ -63,7 +68,7 @@ main(int argc, char *argv[])
   fseek(ptr_file, 20, SEEK_SET);
   fread(&data_flags, 4, 1, ptr_file);
   
-  // Skip the header
+  // Skip the header (always 76 in length)
   fseek(ptr_file, 76, SEEK_SET);
   
   // Skip the Link target identifier
