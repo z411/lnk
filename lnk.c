@@ -57,7 +57,6 @@ main(int argc, char *argv[])
   // Check magic number
   fread(id, 1, 8, ptr_file);
   
-  // The header size is always 76.
   if(memcmp(id, magic, sizeof(magic)) != 0) {
     fprintf(stderr, "Not an LNK file.\n");
     fclose(ptr_file);
